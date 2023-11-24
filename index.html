@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Clone</title>
+    <link rel="stylesheet" href="style.css">
+    
+</head>
+
+<body>
+   <div class="authentication-container" id="introductionScreen">
+    <!-- Example for the welcome message -->
+    <h1 data-i18n="welcome-title">Welcome to Aditya's chatbot!</h1>
+    <p data-i18n="welcome-message">Please sign in to continue.</p>
+    <p data-i18n="game-message">Else you can try this game</p>
+    
+
+    
+     <div class="game">
+       <h1>Bat Ball Stump Game</h1>
+    <button class="choice-button" onclick="
+        let computerChoice = generateComputerChoice();
+        let resultMsg = getResult('Bat', computerChoice);
+        showResult('Bat', computerChoice, resultMsg);
+    ">
+       <img src="bat.png" alt="Bat" class="choice-image">
+    </button>
+
+    <button class="choice-button" onclick="
+        let computerChoice = generateComputerChoice();
+        let resultMsg = getResult('Ball', computerChoice);
+        showResult('Ball', computerChoice, resultMsg);
+    ">
+      <img src="ball.png" alt="Ball" class="choice-image">
+    </button>
+
+    <button class="choice-button" onclick="
+        let computerChoice = generateComputerChoice();
+        let resultMsg = getResult('Stump', computerChoice);
+        showResult('Stump', computerChoice, resultMsg);
+    ">
+      <img src="stump.png" alt="Stump" class="choice-image">
+    </button>
+
+       <h3 id="user-move"></h3>
+       <h3 id="computer-move"></h3>
+       <h3 id="result"></h3>
+       <h3 id="score"></h3>
+       
+    <button onclick="
+        localStorage.clear();
+        resetScore();
+    ">Reset</button>  
+    
+  </div>
+     <button onclick="showAuthenticationForm()" data-i18n="sign-in-button">Sign In</button>
+   </div>    
+  
+
+  <!-- Authentication Form -->
+  <div class="authentication-container" id="authenticationScreen" style="display: none;">
+    
+      <div class="authentication-form">
+        
+          <h2>Sign In</h2>
+          <input type="text" id="usernameInput" placeholder="Enter your username" required>
+          <button onclick="signIn()">Sign In</button>
+      </div>
+  </div>
+  <div class="app-container" id="chatScreen" style="display: none;">
+  <!-- Fixed header -->
+  <header class="fixed-header">
+      
+      <span>
+          <div class="contact-name" id="loggedInUsername"></div>
+          
+      </span>
+  </header>
+    <div class="app-container">
+      <div class="contacts-container">
+          <h2>Contact List</h2>
+          <ul id="contactList">
+              <!-- Contact items will be added dynamically here -->
+          </ul>
+        <div id="webchat-container"></div>
+          <div>
+              <input type="text" id="newContactInput" placeholder="Enter username">
+              <button onclick="addContact()">Add Contact</button>
+          </div>
+      </div>
+      
+        <div class="chat-container">
+            <div class="chat-header">
+                <img src="img.jpeg" alt="User Avatar">
+                <span>
+                    <div class="contact-name">Aditya</div>
+                    <div class="contact-status">Online</div>
+                </span>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message-group">
+                    <div class="timestamp">Today, 10:30 AM</div>
+                    <div class="message received">
+                        <span>Aditya Jha</span>
+                        <p>Hello there! How are you?</p>
+                        <span class="timestamp" id="timestamp1">10:30 AM</span>
+                    </div>
+                    <div class="message sent">
+                        <p>Hi Aditya! I'm doing well, thank you.</p>
+                        <span class="timestamp" id="timestamp2">10:32 AM</span>
+                    </div>
+                </div>
+                <!-- Additional message groups can be added here -->
+            </div>
+          
+
+          <div class="chat-messages" id="chatMessages">
+              <!-- Existing content -->
+          </div>
+            <div class="message-input">
+                <textarea id="messageInput" placeholder="Type your message..."></textarea>
+              <div id="content">
+                  
+              </div>
+                <button onclick="sendMessage()">Send</button>
+                <button onclick="resetMessages()">Reset</button>
+                <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+                <input type="file" accept="image/*" onchange="attachImage(this)">
+                <span id="typingIndicator" class="typing-indicator"></span>
+            </div>
+        </div>
+        <!-- Sound notification element -->
+        <audio id="messageSound" class="sound-notification" src="notificaion_sound.mp3" preload="auto"></audio>
+    </div>
+
+    <!-- Add an input field for search -->
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search messages...">
+        <button onclick="searchMessages()">Search</button>
+    </div>
+
+    <!-- Modify the chat-messages div to include an ID -->
+    <div class="chat-messages" id="chatMessages">
+        <!-- Existing content -->
+    </div>
+
+    
+
+
+    <script>
+      // Function to add a new contact
+      function addContact() {
+          const newContactInput = document.getElementById('newContactInput');
+          const newContactUsername = newContactInput.value.trim();
+
+          if (newContactUsername === '') {
+              alert('Please enter a valid username.');
+              return;
+          }
+
+          // Check if the contact already exists
+          const existingContacts = document.querySelectorAll('#contactList li');
+          for (const contact of existingContacts) {
+              if (contact.textContent.trim() === newContactUsername) {
+                  alert('Contact already exists.');
+                  return;
+              }
+          }
+
+          // Create a new contact item
+          const contactList = document.getElementById('contactList');
+          const newContactItem = document.createElement('li');
+          newContactItem.textContent = newContactUsername;
+          contactList.appendChild(newContactItem);
+
+          // Clear the input field
+          newContactInput.value = '';
+      }
+
+      // Function to remove a contact
+      function removeContact() {
+          const selectedContact = this.textContent.trim();
+          if (confirm(`Are you sure you want to remove ${selectedContact}?`)) {
+              this.remove();
+          }
+      }
+
+      function saveContacts() {
+          const contactList = document.getElementById('contactList');
+          const contacts = Array.from(contactList.children).map(contact => contact.textContent.trim());
+          localStorage.setItem('contacts', JSON.stringify(contacts));
+      }
+
+      // Function to load contacts from local storage
+      function loadContacts() {
+          const contactList = document.getElementById('contactList');
+          const savedContacts = localStorage.getItem('contacts');
+
+          if (savedContacts) {
+              const contacts = JSON.parse(savedContacts);
+
+              // Clear the existing contact list
+              contactList.innerHTML = '';
+
+              // Populate the contact list with saved contacts
+              contacts.forEach(contact => {
+                  const contactItem = document.createElement('li');
+                  contactItem.textContent = contact;
+                  contactItem.addEventListener('click', removeContact);
+                  contactList.appendChild(contactItem);
+              });
+          }
+      }
+
+      // Function to add a new contact
+      function addContact() {
+          const newContactInput = document.getElementById('newContactInput');
+          const newContactUsername = newContactInput.value.trim();
+
+          if (newContactUsername === '') {
+              alert('Please enter a valid username.');
+              return;
+          }
+
+          // Check if the contact already exists
+          const existingContacts = document.querySelectorAll('#contactList li');
+          for (const contact of existingContacts) {
+              if (contact.textContent.trim() === newContactUsername) {
+                  alert('Contact already exists.');
+                  return;
+              }
+          }
+
+          // Create a new contact item
+          const contactList = document.getElementById('contactList');
+          const newContactItem = document.createElement('li');
+          newContactItem.textContent = newContactUsername;
+          newContactItem.addEventListener('click', removeContact);
+          contactList.appendChild(newContactItem);
+
+          // Save the contacts to local storage
+          saveContacts();
+
+          // Clear the input field
+          newContactInput.value = '';
+
+        const welcomeMessage = "Welcome to the chat!";
+        fetchAndPlaySpeech(welcomeMessage);
+      }
+
+      async function fetchAndPlaySpeech(text) {
+        const speechUrl = await fetchSpeech(text);
+
+        if (speechUrl) {
+          url: "https://large-text-to-speech.p.rapidapi.com/tts";
+          playSpeech(speechUrl);
+        }
+      }
+
+      async function sendMessage() {
+        const messageInput = document.getElementById('messageInput');
+        const chatMessages = document.getElementById('chatMessages');
+
+        const messageText = messageInput.value.trim();
+        if (messageText === '') {
+          return;
+        }
+
+        const messageGroup = createMessageGroup('sent', messageText);
+        chatMessages.appendChild(messageGroup);
+        messageInput.value = '';
+
+        // Save messages to localStorage
+        saveMessages();
+
+        // Fetch and play speech for the sent message
+        fetchAndPlaySpeech(messageText);
+
+        // Simulate a received message after a short delay (you would replace this with actual server communication)
+        setTimeout(() => receiveMessage(), 1000);
+      }
+
+      // Call the fetchData function when the page loads
+      document.addEventListener('DOMContentLoaded', fetchData);
+
+      // Call the loadDarkModePreference function when the page loads
+      document.addEventListener('DOMContentLoaded', loadDarkModePreference);
+
+      // Function to remove a contact
+      function removeContact() {
+          const selectedContact = this.textContent.trim();
+          if (confirm(`Are you sure you want to remove ${selectedContact}?`)) {
+              this.remove();
+
+              // Save the contacts to local storage after removal
+              saveContacts();
+          }
+      }
+
+      // Attach click event to each contact item for removal
+      document.addEventListener('DOMContentLoaded', () => {
+          loadContacts();
+      });
+
+      // Attach click event to each contact item for removal
+      document.addEventListener('DOMContentLoaded', () => {
+          const contactItems = document.querySelectorAll('#contactList li');
+          contactItems.forEach(contact => {
+              contact.addEventListener('click', removeContact);
+          });
+      });
+
+      function showAuthenticationForm() {
+          document.getElementById('introductionScreen').style.display = 'none';
+          document.getElementById('authenticationScreen').style.display = 'flex';
+          document.getElementById('chatScreen').style.display = 'none';
+      }
+
+      // Function to handle user sign-in
+      function signIn() {
+          const usernameInput = document.getElementById('usernameInput').value.trim();
+          if (usernameInput === '') {
+              alert('Please enter a valid username.');
+              return;
+
+            document.getElementById('authenticationScreen').style.display = 'none';
+            document.getElementById('chatScreen').style.display = 'flex';
+
+            // Load existing contacts and messages
+            loadContacts();
+            loadMessages();
+            loadDarkModePreference();
+          }
+
+          // Store the username in localStorage for simplicity (you would use a more secure method in a real app)
+          localStorage.setItem('loggedInUsername', usernameInput);
+
+          // Update the UI with the logged-in username
+          document.getElementById('loggedInUsername').textContent = usernameInput;
+
+          // Show the chat screen
+          document.getElementById('authenticationScreen').style.display = 'none';
+          document.getElementById('chatScreen').style.display = 'flex';
+      }
+        document.addEventListener('DOMContentLoaded', () => {
+            loadMessages();
+          
+        });
+
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const chatMessages = document.getElementById('chatMessages');
+
+            const messageText = messageInput.value.trim();
+            if (messageText === '') {
+                return;
+            }
+
+            const messageGroup = createMessageGroup('sent', messageText);
+            chatMessages.appendChild(messageGroup);
+            messageInput.value = '';
+
+            // Save messages to localStorage
+            saveMessages();
+
+            // Simulate a received message after a short delay (you would replace this with actual server communication)
+            setTimeout(() => receiveMessage(), 1000);
+        }
+
+        function receiveMessage() {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageGroup = createMessageGroup('received', "Thanks! I'm glad to hear that.");
+            chatMessages.appendChild(messageGroup);
+            chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to the bottom
+
+            // Save messages to localStorage
+            saveMessages();
+
+            // Play message notification sound
+            playMessageNotificationSound();
+        }
+
+        function createMessageGroup(type, messageText) {
+            const messageGroup = document.createElement('div');
+            messageGroup.classList.add('message-group');
+            messageGroup.innerHTML = `
+              <div class="timestamp">${getCurrentDate()}</div>
+              <div class="message ${type}">
+                  ${type === 'received' ? '<span>Hey! my self Aditya Jha. If you have any quetions please go to the chat bot in the right corner</span>' : ''}
+                  <p>${messageText}</p>
+                  <span class="timestamp">${getCurrentTime()}</span>
+              </div>
+          `;
+            return messageGroup;
+        }
+
+        function getCurrentDate() {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date().toLocaleDateString('en-US', options);
+        }
+
+        function getCurrentTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+
+        // Function to update timestamps every minute
+        function updateTimestamps() {
+            const timestamp1 = document.getElementById('timestamp1');
+            const timestamp2 = document.getElementById('timestamp2');
+
+            if (timestamp1 && timestamp2) {
+                timestamp1.textContent = getCurrentTime();
+                timestamp2.textContent = getCurrentTime();
+            }
+        }
+
+        // Save messages to localStorage
+        function saveMessages() {
+            const chatMessages = document.getElementById('chatMessages');
+            const messages = chatMessages.innerHTML;
+            localStorage.setItem('messages', messages);
+        }
+
+        // Load messages from localStorage
+        function loadMessages() {
+            const chatMessages = document.getElementById('chatMessages');
+            const savedMessages = localStorage.getItem('messages');
+            if (savedMessages) {
+                chatMessages.innerHTML = savedMessages;
+            }
+        }
+
+        // Reset messages and clear localStorage
+        function resetMessages() {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = '';
+            localStorage.removeItem('messages');
+        }
+
+        // Update timestamps every minute (60000 milliseconds)
+        setInterval(updateTimestamps, 60000);
+
+        // Load messages on page load
+        loadMessages();
+
+        const typingIndicator = document.getElementById('typingIndicator');
+        const emojis = ['😊', '👍', '👋', '🤔', '😂', '❤️', '🎉'];
+
+        function simulateTyping() {
+            typingIndicator.textContent = 'Typing...';
+        }
+
+        function stopTyping() {
+            typingIndicator.textContent = '';
+        }
+
+        function getRandomEmoji() {
+            const randomIndex = Math.floor(Math.random() * emojis.length);
+            return emojis[randomIndex];
+        }
+
+        function simulateDynamicResponse() {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageGroup = createMessageGroup('received', `Thanks! ${getRandomEmoji()}`);
+            chatMessages.appendChild(messageGroup);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Save messages to localStorage
+            saveMessages();
+
+            // Play message notification sound
+            playMessageNotificationSound();
+        }
+
+        function receiveMessage() {
+            simulateTyping();
+            setTimeout(() => {
+                stopTyping();
+                simulateDynamicResponse();
+            }, 1000);
+        }
+
+        function attachImage(input) {
+            const file = input.files[0];
+            if (file) {
+                const imageUrl = URL.createObjectURL(file);
+                const chatMessages = document.getElementById('chatMessages');
+                const messageGroup = createMessageGroup('sent', `<img src="${imageUrl}" alt="Attached Image">`);
+                chatMessages.appendChild(messageGroup);
+                input.value = '';
+
+                // Save messages to localStorage
+                saveMessages();
+
+                // Play message notification sound
+                playMessageNotificationSound();
+            }
+        }
+
+        function toggleDarkMode() {
+            const appContainer = document.querySelector('.app-container');
+            appContainer.classList.toggle('dark-mode');
+
+            // Save the dark mode preference to localStorage
+            const isDarkMode = appContainer.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkMode);
+        }
+
+        function loadDarkModePreference() {
+            const appContainer = document.querySelector('.app-container');
+            const darkModePreference = localStorage.getItem('darkMode');
+
+            if (darkModePreference === 'true') {
+                appContainer.classList.add('dark-mode');
+            }
+        }
+
+        function playMessageNotificationSound() {
+            const messageSound = document.getElementById('messageSound');
+            messageSound.play();
+
+            // Show sound notification element briefly
+            const soundNotification = document.querySelector('.sound-notification');
+            soundNotification.style.display = 'block';
+            setTimeout(() => {
+                soundNotification.style.display = 'none';
+            }, 2000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadMessages();
+            loadDarkModePreference();
+        });
+
+      // Function to search messages
+      function searchMessages() {
+          const searchInput = document.getElementById('searchInput');
+          const searchTerm = searchInput.value.trim().toLowerCase();
+
+          const chatMessages = document.getElementById('chatMessages');
+          const allMessages = chatMessages.getElementsByClassName('message');
+
+          for (const message of allMessages) {
+              const messageText = message.querySelector('p').textContent.toLowerCase();
+
+              // Check if the message contains the search term
+              if (messageText.includes(searchTerm)) {
+                  message.style.display = 'block';
+              } else {
+                  message.style.display = 'none';
+              }
+          }
+      }
+
+      // Clear the search results and show all messages
+      function clearSearch() {
+          const chatMessages = document.getElementById('chatMessages');
+          const allMessages = chatMessages.getElementsByClassName('message');
+
+          for (const message of allMessages) {
+              message.style.display = 'block';
+          }
+
+          // Clear the search input
+          document.getElementById('searchInput').value = '';
+      }
+
+      let scoreStr = localStorage.getItem('Score');
+        let score;
+        resetScore(scoreStr);
+
+        function resetScore(scoreStr){
+          score = scoreStr ? JSON.parse(scoreStr) : {
+            win: 0,
+            lost: 0,
+            tie: 0,      
+          };
+
+          score.displayScore = displayScore = function(){
+              return `score: won: ${score.win}  lost: ${score.lost}  tie: ${score.tie}`
+            };
+          showResult();
+        }
+
+
+
+         function generateComputerChoice(){
+           let randomNumber = Math.random()*3;
+           let choice;
+           if(randomNumber > 0 && randomNumber <=1){
+             choice = 'Bat';
+           }else if (randomNumber > 1 && randomNumber <=2){
+             choice = 'Ball';
+           }else {
+             choice = 'Stump';
+           }
+           return choice;
+        }
+
+        function getResult(userMove, computerMove){
+          if (userMove === 'Bat'){
+            if(computerMove === 'Ball'){
+              score.win++;
+              return 'You Win!';          
+            }else if (computerMove === 'Bat'){
+              score.tie++;
+              return `It's a tie`;
+            }else if (computerMove === 'Stump'){  
+              score.lost++;
+              return 'computer has won';
+            }
+
+          }else if (userMove === 'Ball'){
+            if(computerMove === 'Ball'){ 
+              score.tie++;
+              return `It's a tie`;          
+            }else if (computerMove === 'Bat'){
+              score.lost++;
+              return 'computer has won';
+            }else if (computerMove === 'Stump'){
+              score.win++;
+              return 'You win!';
+            }
+        }else{
+          if(computerMove === 'Ball'){
+            score.lost++;
+            return 'computer has won';          
+          }else if (computerMove === 'Bat'){
+            score.win++;
+            return 'You win!';
+          }else if (computerMove === 'Stump'){
+            score.tie++;
+            return `It's a tie`;
+          }
+        }    
+      }
+        function showResult(userMove, computerMove, result){
+          localStorage.setItem('Score', JSON.stringify(score));
+
+          document.querySelector('#user-move').innerText = 
+            userMove ? `You have chosen ${userMove}` : '';
+          document.querySelector('#computer-move').innerText = 
+            computerMove ? `Computer choice is ${computerMove}` : '';
+          document.querySelector('#result').innerText = 
+            result ? `${result}` : '';
+          document.querySelector('#score').innerText = `${score.displayScore()}`;
+          
+        }
+
+            
+      let currentLanguage = 'en';
+
+      // Function to set the language and update content
+      function setLanguage(language) {
+        currentLanguage = language;
+        updateContent();
+      }
+
+      // Function to update content based on the current language
+      function updateContent() {
+        const elements = document.querySelectorAll('[data-i18n]');
+        elements.forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (languages[currentLanguage][key]) {
+            element.textContent = languages[currentLanguage][key];
+          }
+        });
+      }
+
+      function fetchData() {
+          fetch('https://programming-memes-images.p.rapidapi.com/v1/memes', {
+              method: 'GET',
+              headers: {
+                  'X-RapidAPI-Key': 'e2707d9f90mshef4b68042c73dd1p18b407jsn07839d94e86e',
+                  'X-RapidAPI-Host': 'programming-memes-images.p.rapidapi.com'
+              }
+          })
+          .then(response => response.json())
+          .then(data => {
+              // Process and display the data
+              displayData(data);
+          })
+          .catch(error => console.error('Error fetching data:', error));
+      }
+
+      // Function to display data on the page
+      function displayData(data) {
+          const contentDiv = document.getElementById('content');
+
+          // Example: Display the first meme's image
+          if (data && data.length > 0) {
+              const imageUrl = data[0].url;
+              const imageElement = document.createElement('img');
+              imageElement.src = imageUrl;
+              contentDiv.appendChild(imageElement);
+          }
+      }
+
+      // Call the fetchData function when the page loads
+      document.addEventListener('DOMContentLoaded', fetchData);
+
+      
+      const API_KEY = "e2707d9f90mshef4b68042c73dd1p18b407jsn07839d94e86e";
+      const url = "https://large-text-to-speech.p.rapidapi.com/tts";
+
+      // Function to fetch speech from the API
+      async function fetchSpeech(text) {
+        try {
+          const res = await fetch(`${url}?text=${encodeURIComponent(text)}`, {
+            method: 'GET',
+            headers: {
+              'X-RapidAPI-Key': API_KEY,
+              'X-RapidAPI-Host': 'large-text-to-speech.p.rapidapi.com'
+            }
+          });
+
+          if (!res.ok) {
+            throw new Error(`HTTP error! Status: ${res.status}`);
+          }
+
+          const data = await res.json();
+          return data.url;
+        } catch (error) {
+          console.error('Error fetching speech:', error);
+          return null;
+        }
+      }
+            
+
+    </script>
+
+    
+    <script src="https://cdn.botpress.cloud/webchat/v1/inject.js"></script>
+    <script src="https://mediafiles.botpress.cloud/a7a11867-d85d-4a3c-8cf6-18d4ea6035c4/webchat/config.js" defer></script>
+</body>
+
+</html>

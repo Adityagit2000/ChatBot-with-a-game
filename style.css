@@ -1,0 +1,385 @@
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Roboto', sans-serif;
+        background-color: #f4f4f4;
+    }
+
+    .app-container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        max-width: 100%;
+        margin: 0 auto;
+    }
+
+    .chat-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background-color: #ffffff;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .chat-header {
+        background-color: #075e54;
+        color: #fff;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+     }
+
+    .chat-header img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+        cursor: po;
+    }
+
+    .chat-header span {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .chat-header .contact-name {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .chat-header .contact-status {
+        font-size: 12px;
+    }
+
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px;
+    }
+
+    .message-group {
+        margin-bottom: 20px;
+    }
+
+    .message-group .timestamp {
+        font-size: 12px;
+        color: #888;
+        margin-bottom: 10px;
+    }
+
+    @media (max-width: 600px) {
+        /* Styles for screens with a maximum width of 600px */
+        .message {
+            max-width: 90%;
+            /* Adjust the width accordingly for smaller screens */
+        }
+
+        .message-input {
+            flex-direction: column;
+        }
+    }
+
+    @media (min-width: 601px) and (max-width: 900px) {
+        /* Styles for screens with a width between 601px and 900px */
+        .message {
+            max-width: 80%;
+        }
+    }
+
+    /* Default styles for screens wider than 900px */
+    .message {
+        max-width: 60%;
+        border-radius: 4px;
+    }
+
+    .received {
+        align-self: flex-start;
+    }
+
+    .sent {
+        background-color: #075e54;
+        align-self: flex-end;
+        border-radius: 5px 0px 10px 7px;
+    }
+
+    .timestamp {
+        font-size: 12px;
+        margin-left: 10px;
+        color: #555;
+    }
+
+    .message-input {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        background-color: #fff;
+        border-top: 1px solid #ddd;
+    }
+
+    .message-input textarea {
+        flex: 1;
+        resize: none;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        /* Add some space between the textarea and buttons */
+        outline: none;
+        background-color: #EEEEEE;
+    }
+
+    .message-input button {
+        padding: 10px 15px;
+        background-color: #075e54;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        outline: none;
+    }
+
+    .message-input input[type="file"] {
+        margin-bottom: 10px;
+        background-color: #075e54;
+        /* Background color for the button */
+        color: #fff;
+        /* Text color for the button */
+        padding: 8px 15px;
+        /* Adjust padding for better appearance */
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        outline: none;
+        transition: background-color 0.3s ease;
+        /* Add a smooth transition effect */
+    }
+
+    .message-input input[type="file"]:hover {
+        background-color: #064c3a;
+        /* Change background color on hover */
+    }
+
+    .dark-mode {
+        background-color: #333;
+        /* Dark background color */
+        color: #fff;
+        /* Text color in dark mode */
+        /* Add other styles for dark mode */
+    }
+
+    .dark-mode .chat-container {
+        background-color: #222;
+        /* Dark background color for the chat container */
+    }
+
+    .dark-mode .message {
+        /* Text color in messages in dark mode */
+    }
+
+    .dark-mode .message-input {
+        background-color: #222;
+        /* Dark background color for the message input area */
+        border-top: 1px solid #444;
+        /* Adjust border color for dark mode */
+    }
+
+    .message received .p {
+        text-decoration-color: black;
+    }
+
+    /* Add this CSS code inside your <style> block */
+    .message-input input[type="file"] {
+        margin-bottom: 10px;
+        background-color: #075e54;
+        /* Background color for the button */
+        color: #fff;
+        /* Text color for the button */
+        padding: 8px 15px;
+        /* Adjust padding for better appearance */
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        outline: none;
+        transition: background-color 0.3s ease;
+        /* Add a smooth transition effect */
+    }
+
+    .message-input input[type="file"]:hover {
+        background-color: #064c3a;
+        /* Change background color on hover */
+    }
+
+    /* New styles for typing indicator */
+    .typing-indicator {
+        font-size: 12px;
+        color: #BE4343;
+        margin-top: 5px;
+    }
+
+    .sound-notification {
+        display: none;
+    }
+
+  .authentication-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 120vh;
+      background-color: #075e54;
+      color: #fff
+  }
+
+  .authentication-container h1{
+    font-size: 2em;
+    margin-bottom: 10px;
+  }
+
+  .authentication-container p{
+    font-size: 1.2em;
+    margin-bottom: 20px;
+  }
+
+  .authentication-container button{
+    padding: 15px 20px; 
+    font-size: 1.2em; 
+    background-color: #128C7E; 
+    color: #fff;
+    border: none;
+    border-radius: 5px; 
+    cursor: pointer;
+  }
+
+  .authentication-container button:hover {
+      background-color: #0D6E5A; 
+  }
+
+  .authentication-form {
+      max-width: 400px;
+      width: 100%;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+      border-radius: 8px;
+      text-align: center;
+  }
+
+  .authentication-form h2{
+    color: #075e54;
+  }
+
+  .authentication-form input {
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+  }
+
+  .authentication-form button {
+      width: 100%;
+      padding: 15px;
+      background-color: #075e54;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+  }
+
+  .authentication-form button:hover {
+      background-color: #064c3a;
+  }
+
+  #webchat-container {
+      /* Customize the appearance of the webchat container */
+      background-color: #f4f4f4;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  button {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+
+  /* Adjust the alert styles as needed */
+  .alert {
+    font-size: 18px;
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    background-color: #ddd;
+  }
+
+  /* Adjust the score display styles as needed */
+  .score {
+    font-size: 20px;
+    margin-top: 10px;
+    color: #333;
+
+  .game{
+    flex-direction: column;
+  }  
+
+  .choice-button{
+    height: 100px;
+    width: 100px;
+    border: none;
+    margin: 10px;
+    background-color: #239dd1;
+    border-radius: 50px;
+    cursor: pointer;
+  }
+
+    #content {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .meme-container {
+        margin: 10px;
+        text-align: center;
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+    }
+
+    .choice-image{
+      height: 75px;
+    }
+
+    .choice-button{
+          height: 100px;
+          width: 100px;
+          border: none;
+          margin: 10px;
+          background-color: #239dd1;
+          border-radius: 50px;
+          cursor: pointer;
+    }
+
+    @media screen and (max-width: 768px) {
+      nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+     }
+    
